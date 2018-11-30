@@ -1,0 +1,80 @@
+version: '2.1'
+
+services:
+  dpimetrics:
+    image: qxip/dpimetrics
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./conf/config.js:/app/config.js
+
+  telegraf:
+    image: telegraf:1.5-alpine
+    restart: unless-stopped
+    volumes:
+      - ./conf/telegraf.conf:/etc/telegraf/telegraf.conf
+    ports:
+      - "8092:8092/udp"
+      - "8125:8125/udp"
+    depends_on:
+      - dpimetrics
+
+  influxdb:
+    image: influxdb:1.5-alpine
+    volumes:
+      - ./influx:/var/lib/influxdb
+    expose:
+      - 8086
+
+  chronograf:
+    image: chronograf:1.5-alpine
+    environment:
+      INFLUXDB_URL: http://influxdb:8086
+      KAPACITOR_URL: http://kapacitor:9092
+    ports:
+      - "8888:8888/tcp"
+    expose:
+      - 8888
+    links:
+      - influxdb
+      - kapacitor
+
+  kapacitor:
+    image: kapacitor:1.5-alpine
+    environment:
+      KAPACITOR_HOSTNAME: kapacitor
+      KAPACITOR_INFLUXDB_0_URLS_0: http://influxdb:8086
+    links:
+      - influxdb
+    expose:
+      - 9092
+
+  provisioning:
+    image: alpine:latest
+    links:
+      - influxdb
+    volumes:
+      - ./conf/homer_dashboard.json:/tmp/homer_dashboard.json
+    command: 
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache curl;
+        echo Waiting for influxdb API ...;
+        while ! nc -z influxdb 8086;
+        do
+          sleep 1;
+        done;
+        echo InfluxDB Retention Policy push ...;
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE DATABASE peafowl'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE RETENTION POLICY "60s" ON "peafowl" DURATION 4w REPLICATION 1 DEFAULT'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE RETENTION POLICY "300s" ON "peafowl" DURATION 8w REPLICATION 1'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE RETENTION POLICY "3600s" ON "peafowl" DURATION 16w REPLICATION 1'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE RETENTION POLICY "86400s" ON "peafowl" DURATION 32w REPLICATION 1'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE CONTINUOUS QUERY cq_300s ON peafowl RESAMPLE EVERY 1m BEGIN SELECT mean(*) INTO peafowl."300s".:MEASUREMENT FROM peafowl."60s"./.*/ GROUP BY time(5m),* END'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE CONTINUOUS QUERY cq_3600s ON peafowl RESAMPLE EVERY 10m BEGIN SELECT mean(*) INTO peafowl."3600s".:MEASUREMENT FROM peafowl."60s"./.*/ GROUP BY time(1h),* END'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=CREATE CONTINUOUS QUERY cq_86400s ON peafowl RESAMPLE EVERY 1h BEGIN SELECT mean(*) INTO peafowl."86400s".:MEASUREMENT FROM peafowl."60s"./.*/ GROUP BY time(1d),* END'
+        curl -G http://influxdb:8086/query --data-urlencode 'q=drop retention policy "autogen" ON "peafowl"'
+        echo Provisioning completed! Exiting ...;
+        poweroff;
+
