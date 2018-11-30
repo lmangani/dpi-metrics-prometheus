@@ -13,7 +13,7 @@ console.log('Initializing Metrics...');
 const metrics = require('./metrics').metrics;
 metrics.start(config.port,config.host,config.endpoint);
 
-console.log('Initializing Socket...');
+console.log('Initializing Socket...',config.interface,config.bpf);
 const pcap = require('./pcap').pcap;
 pcap.start(config.interface,config.bpf);
 

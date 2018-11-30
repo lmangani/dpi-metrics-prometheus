@@ -5,6 +5,7 @@ var metrics = {};
 const client = require('prom-client');
 const register = client.register;
 
+/*
 const Histogram = client.Histogram;
 metrics.h = new Histogram({
         name: 'test_histogram',
@@ -18,32 +19,32 @@ metrics.c = new Counter({
         help: 'Example of a counter',
         labelNames: ['code']
 });
-
+*/
 const Gauge = client.Gauge;
 metrics.g = new Gauge({
-        name: 'test_gauge',
-        help: 'Example of a gauge',
-        labelNames: ['method', 'code']
+        name: 'dpi_gauge',
+        help: 'DPI Protocol Detections',
+        labelNames: ['L7']
 });
 
 // Server
 const fastify = require('fastify')()
 fastify.get(config.endpoint, async (request, reply) => {
         reply.send(register.metrics());
+	metrics.g.reset();
 });
 
-metrics.start = function(port,interface,endpoint) {
-	if (!port) port = 3000;
-	console.log('Starting '+config.endpoint+' on port',port)
-        const startServer = async (port,interface) => {
+metrics.start = function() {
+	console.log('Starting '+config.endpoint+' on', config.host, 'port',config.port)
+        const startServer = async () => {
           try {
-            await fastify.listen(port,interface)
-            console.log('server listening on',port)
+            await fastify.listen(config.port,config.host)
           } catch (err) {
-            fastify.log.error(err)
+            console.log(err)
+	    process.exit();
           }
         }
-        startServer(config.port,config.interface,config.endpoint)
+        startServer()
 }
 
 module.exports.metrics = metrics;

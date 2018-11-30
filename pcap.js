@@ -56,10 +56,7 @@ commands.start = function(interface,filter){
 	    // From object to String
 	    protoL7 = protoL7.toString();
 	    if (debug) console.log("L7: ", protoL7);
-	    if (protoL7 != "Unknown" && metrics){
-	        // metrics.g.set({ method: protoL7, code: 200 }, 1);
-	        metrics.h.labels(protoL7).observe(1);
-	    }
+	    if (metrics.g) metrics.g.labels(protoL7).inc();
 
         });
 
