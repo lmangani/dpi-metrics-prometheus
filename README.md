@@ -1,5 +1,7 @@
+<img src="https://i.imgur.com/jrQX0Of.gif" width=250>
+
 # DPI-metrics
-Sample application exposing [Peafowl DPI](http://github.com/libpeafowl) detections as Prometheus metrics endpoint
+Sample NodeJS application exposing [Peafowl DPI](http://github.com/libpeafowl) detections as Prometheus metrics endpoint
 
 ## Configuration
 Edit the details in `config.js` to configure the parameters
