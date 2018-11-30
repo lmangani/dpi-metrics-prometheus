@@ -14,7 +14,8 @@ var config = {
 ```
 
 ### Example Output
-```# HELP dpi_gauge DPI Protocol Detections
+```
+# HELP dpi_gauge DPI Protocol Detections
 # TYPE dpi_gauge gauge
 dpi_gauge{L7="Unknown"} 9
 dpi_gauge{L7="SIP"} 4
