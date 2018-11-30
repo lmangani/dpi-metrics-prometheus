@@ -5,8 +5,8 @@ Sample NodeJS application exposing [Peafowl DPI](http://github.com/libpeafowl) d
 
 ## Configuration
 Edit the details in `config.js` to configure the parameters
-```
-var config = {
+```json
+{
 	"port": 3000,
 	"host": "0.0.0.0",
 	"endpoint": "/metrics",
