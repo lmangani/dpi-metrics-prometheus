@@ -3,7 +3,8 @@ var config = {
 	"host": "0.0.0.0",
 	"endpoint": "/metrics",
 	"interface":"eth0",
-	"bpf":""
+	"bpf":"",
+        "debug": false
 };
 
 module.exports.config = config;
