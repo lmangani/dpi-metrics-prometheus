@@ -12,3 +12,12 @@ var config = {
 	"bpf":""
 };
 ```
+
+### Example Output
+```# HELP dpi_gauge DPI Protocol Detections
+# TYPE dpi_gauge gauge
+dpi_gauge{L7="Unknown"} 9
+dpi_gauge{L7="SIP"} 4
+dpi_gauge{L7="SSH"} 18
+
+```
