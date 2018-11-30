@@ -1,0 +1,20 @@
+/*
+ * Peafowl DPI Metrics
+ *
+ *
+ */
+
+
+var config = require('./config').config;
+if (!config || !config.port || !config.endpoint) process.exit();
+
+// Initialize Metrics Server
+console.log('Initializing Metrics...');
+const metrics = require('./metrics').metrics;
+metrics.start(config.port,config.host,config.endpoint);
+
+console.log('Initializing Socket...');
+const pcap = require('./pcap').pcap;
+pcap.start(config.interface,config.bpf);
+
+console.log('Running...');
