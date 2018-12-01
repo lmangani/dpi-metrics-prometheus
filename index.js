@@ -17,4 +17,4 @@ console.log('Initializing Socket...',config.interface,config.bpf);
 const pcap = require('./lib/pcap').pcap;
 pcap.start(config.interface,config.bpf);
 
-console.log('Running...');
+console.log('DPI-Metrics is Running!');
