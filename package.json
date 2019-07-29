@@ -1,7 +1,7 @@
 {
   "name": "dpi-metrics",
-  "version": "1.0.0",
-  "description": "DPI Metrics with Peafowl",
+  "version": "1.0.1",
+  "description": "DPI Prometheus Metrics with Peafowl",
   "main": "index.js",
   "config": {
     "unsafe-perm": true
