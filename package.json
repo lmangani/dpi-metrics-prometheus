@@ -21,7 +21,7 @@
   "author": "lorenzo.mangani@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "fastify": "^1.13.1",
+    "fastify": "^2.15.1",
     "node-peafowl": "^1.0.9",
     "pcap": "^2.1.0",
     "prom-client": "^11.2.0",
